@@ -3,15 +3,21 @@ import torch
 import logging
 import nibabel as nib
 import ants
-from monai.transforms import Compose, Activationsd, AsDiscreted, KeepLargestConnectedComponentd
+from monai.transforms import Compose, Activationsd, AsDiscreted, KeepLargestConnectedComponentd, ReplaceLowConfidenceWithAtlas
 import numpy as np
 
 logger = logging.getLogger("postprocessing")
 logging.basicConfig(level=logging.INFO)
 
+# postprocessing = Compose([
+#     Activationsd(keys="pred", softmax=True, dim=1),
+#     AsDiscreted(keys="pred", argmax=True, dim=1),
+#     KeepLargestConnectedComponentd(keys="pred")
+# ])
+
 postprocessing = Compose([
     Activationsd(keys="pred", softmax=True, dim=1),
-    AsDiscreted(keys="pred", argmax=True, dim=1),
+    ReplaceLowConfidenceWithAtlas(),
     KeepLargestConnectedComponentd(keys="pred")
 ])
 
